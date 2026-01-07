@@ -1,29 +1,42 @@
-'use client'; 
+// app/page.tsx
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Copy, Check, AlertCircle, Loader2 } from 'lucide-react';
 
+interface Config {
+  clientId: string;
+  clientSecret: string;
+  shop: string;
+  scopes: string;
+}
+
+interface ShopifyTokenResponse {
+  access_token: string;
+  scope: string;
+}
+
 export default function ShopifyOAuthApp() {
-  const [step, setStep] = useState(1);
-  const [config, setConfig] = useState({
+  const [step, setStep] = useState<number>(1);
+  const [config, setConfig] = useState<Config>({
     clientId: '',
     clientSecret: '',
     shop: '',
     scopes: 'read_products,write_products,read_orders'
   });
-  const [authCode, setAuthCode] = useState('');
-  const [accessToken, setAccessToken] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [copied, setCopied] = useState('');
+  const [authCode, setAuthCode] = useState<string>('');
+  const [accessToken, setAccessToken] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+  const [copied, setCopied] = useState<string>('');
 
-  const copyToClipboard = (text: string , field: React.SetStateAction<string>) => {
+  const copyToClipboard = (text: string, field: string): void => {
     navigator.clipboard.writeText(text);
     setCopied(field);
     setTimeout(() => setCopied(''), 2000);
   };
 
-  const generateOAuthUrl = () => {
+  const generateOAuthUrl = (): string => {
     if (!config.clientId || !config.shop) {
       setError('Client ID et Shop sont requis');
       return '';
@@ -33,12 +46,12 @@ export default function ShopifyOAuthApp() {
       ? config.shop 
       : `${config.shop}.myshopify.com`;
     
-    const redirectUri = `${window.location.origin}/auth/callback`;
+    const redirectUri = window.location.origin + window.location.pathname;
     
     return `https://${shopDomain}/admin/oauth/authorize?client_id=${config.clientId}&scope=${config.scopes}&redirect_uri=${encodeURIComponent(redirectUri)}`;
   };
 
-  const exchangeCodeForToken = async () => {
+  const exchangeCodeForToken = async (): Promise<void> => {
     if (!authCode || !config.clientId || !config.clientSecret || !config.shop) {
       setError('Tous les champs sont requis');
       return;
@@ -52,7 +65,10 @@ export default function ShopifyOAuthApp() {
         ? config.shop 
         : `${config.shop}.myshopify.com`;
 
-      const response = await fetch(`https://${shopDomain}/admin/oauth/access_token`, {
+      const corsProxy = 'https://corsproxy.io/?';
+      const targetUrl = `https://${shopDomain}/admin/oauth/access_token`;
+
+      const response = await fetch(corsProxy + encodeURIComponent(targetUrl), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,20 +81,27 @@ export default function ShopifyOAuthApp() {
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`Erreur ${response.status}: ${errorText}`);
       }
 
-      const data = await response.json();
-      setAccessToken(data.access_token);
-      setStep(4);
+      const data: ShopifyTokenResponse = await response.json();
+      
+      if (data.access_token) {
+        setAccessToken(data.access_token);
+        setStep(4);
+      } else {
+        throw new Error('Token non reçu dans la réponse');
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de l\'échange du code');
+      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+      setError(errorMessage || 'Erreur lors de l\'échange du code. Vérifiez vos identifiants.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOAuthCallback = () => {
+  const handleOAuthCallback = (): void => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const shop = urlParams.get('shop');
@@ -90,12 +113,12 @@ export default function ShopifyOAuthApp() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleOAuthCallback();
   }, []);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-green-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-xl p-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -353,7 +376,7 @@ export default function ShopifyOAuthApp() {
           </h3>
           <div className="space-y-3 text-sm text-gray-600">
             <p><strong>1.</strong> Créez une app dans votre Shopify Partners Dashboard</p>
-            <p><strong>2.</strong> Configurez l'App URL et Redirect URL avec l'URL de cette page</p>
+            <p><strong>2.</strong> Configurez l'App URL et Redirect URL avec : <code className="bg-gray-100 px-2 py-1 rounded">https://bobw-auth.vercel.app</code></p>
             <p><strong>3.</strong> Entrez vos identifiants (Client ID et Client Secret)</p>
             <p><strong>4.</strong> Cliquez sur "Autoriser sur Shopify"</p>
             <p><strong>5.</strong> Récupérez votre access token (shpat_...)</p>
