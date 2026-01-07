@@ -107,6 +107,13 @@ export default function ShopifyOAuthApp() {
     const shop = urlParams.get('shop');
     
     if (code) {
+      // Récupérer les données sauvegardées
+      const savedConfig = localStorage.getItem('shopify_oauth_config');
+      if (savedConfig) {
+        const parsedConfig = JSON.parse(savedConfig);
+        setConfig(parsedConfig);
+      }
+      
       setAuthCode(code);
       if (shop) setConfig(prev => ({ ...prev, shop }));
       setStep(3);
@@ -256,6 +263,10 @@ export default function ShopifyOAuthApp() {
                   
                   <a
                     href={generateOAuthUrl()}
+                    onClick={() => {
+                      // Sauvegarder la config avant la redirection
+                      localStorage.setItem('shopify_oauth_config', JSON.stringify(config));
+                    }}
                     className="flex-1 bg-green-500 text-white py-2 rounded-lg font-semibold text-center hover:bg-green-600 transition"
                   >
                     Autoriser sur Shopify
@@ -360,6 +371,8 @@ export default function ShopifyOAuthApp() {
                     shop: '',
                     scopes: 'read_products,write_products,read_orders'
                   });
+                  // Nettoyer le localStorage
+                  localStorage.removeItem('shopify_oauth_config');
                 }}
                 className="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
               >
