@@ -111,14 +111,8 @@ export default function ShopifyOAuthApp() {
     setError('');
 
     try {
-      const shopDomain = config.shop.includes('.myshopify.com') 
-        ? config.shop 
-        : `${config.shop}.myshopify.com`;
-
-      const corsProxy = 'https://corsproxy.io/?';
-      const targetUrl = `https://${shopDomain}/admin/oauth/access_token`;
-
-      const response = await fetch(corsProxy + encodeURIComponent(targetUrl), {
+      // Appel à notre API route Next.js (côté serveur)
+      const response = await fetch('/api/shopify/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,13 +120,14 @@ export default function ShopifyOAuthApp() {
         body: JSON.stringify({
           client_id: config.clientId,
           client_secret: config.clientSecret,
-          code: authCode
+          code: authCode,
+          shop: config.shop
         })
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erreur ${response.status}: ${errorText}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Erreur ${response.status}`);
       }
 
       const data: ShopifyTokenResponse = await response.json();
