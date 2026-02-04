@@ -1,11 +1,15 @@
 // app/api/shopify/token/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { addStoreInDB } from '@/service/blueprint/store';
 
 interface ShopifyTokenRequest {
   client_id: string;
   client_secret: string;
   code: string;
   shop: string;
+  artist: string;
+  recordCompany: string;
+  label?: string;
 }
 
 interface ShopifyTokenResponse {
@@ -16,12 +20,12 @@ interface ShopifyTokenResponse {
 export async function POST(request: NextRequest) {
   try {
     const body: ShopifyTokenRequest = await request.json();
-    const { client_id, client_secret, code, shop } = body;
+    const { client_id, client_secret, code, shop, artist, recordCompany, label } = body;
 
     // Validation des paramètres requis
-    if (!client_id || !client_secret || !code || !shop) {
+    if (!client_id || !client_secret || !code || !shop || !artist) {
       return NextResponse.json(
-        { error: 'Paramètres manquants : client_id, client_secret, code et shop sont requis' },
+        { error: 'Paramètres manquants : client_id, client_secret, code, shop et artist sont requis' },
         { status: 400 }
       );
     }
@@ -69,6 +73,16 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Ajouter le store en base de données
+    addStoreInDB({
+      name: shopDomain,
+      artist: artist,
+      recordCompany: recordCompany || '',
+      label: label || '',
+      apiKey: data.access_token,
+      plan: ''
+    });
 
     // Retourner le token au frontend
     return NextResponse.json({
