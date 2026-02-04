@@ -7,7 +7,7 @@ name: string;
   plan?: string;
 }
 export function addStoreInDB(data: Store): void {
-    const res = fetch('http://www.charts.bobw.app/api/new_store', {
+    const res = fetch('https://charts.bobw.app/api/new_store', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
