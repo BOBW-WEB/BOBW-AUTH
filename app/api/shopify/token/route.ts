@@ -75,13 +75,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Ajouter le store en base de données
+    const shopName = shopDomain.replace('.myshopify.com', '');
     await addStoreInDB({
-      name: shopDomain,
+      name: shopName,
       artist: artist,
       recordCompany: recordCompany || ' ',
       label: label || ' ',
       apiKey: data.access_token,
-      plan: ' '
+      plan: ''
     });
 
     // Retourner le token au frontend
