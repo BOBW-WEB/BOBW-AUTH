@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Ajouter le store en base de données
-    addStoreInDB({
+    await addStoreInDB({
       name: shopDomain,
       artist: artist,
       recordCompany: recordCompany || '',
