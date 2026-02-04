@@ -78,10 +78,10 @@ export async function POST(request: NextRequest) {
     await addStoreInDB({
       name: shopDomain,
       artist: artist,
-      recordCompany: recordCompany || '',
-      label: label || '',
+      recordCompany: recordCompany || ' ',
+      label: label || ' ',
       apiKey: data.access_token,
-      plan: ''
+      plan: ' '
     });
 
     // Retourner le token au frontend
