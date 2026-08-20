@@ -2,8 +2,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Copy, Check, AlertCircle, Loader2 } from "lucide-react";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import {
+  Copy,
+  Check,
+  AlertCircle,
+  Loader2,
+  ArrowLeft,
+  ShieldCheck,
+} from "lucide-react";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,6 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+const LOGO_URL =
+  "https://pub-4c8ccc42d7c14cf3b70f4886e1f2208b.r2.dev/images/bobw_animated_grey.gif";
+
+const STEPS = [
+  { n: 1, label: "Configuration" },
+  { n: 2, label: "Autorisation" },
+  { n: 3, label: "Échange" },
+  { n: 4, label: "Terminé" },
+];
 
 interface Config {
   clientId: string;
@@ -329,33 +346,57 @@ export default function ShopifyOAuthApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-green-50 to-blue-50 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Shopify OAuth Token Generator
-          </h1>
-          <p className="text-gray-600 mb-8">
-            Générez votre token d'accès Shopify en quelques étapes simples
-          </p>
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Brand chrome — the three-stop gradient ribbon, at large scale, used once. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] overflow-hidden">
+        <div className="brand-ribbon absolute -top-56 left-1/2 h-[560px] w-[560px] -translate-x-1/2 rounded-full opacity-[0.18] blur-3xl" />
+      </div>
 
+      <div className="mx-auto max-w-2xl p-6 md:p-10">
+        {/* Header */}
+        <div className="mb-10 flex flex-col items-center gap-4 text-center">
+          <img
+            src={LOGO_URL}
+            alt="BOBW"
+            className="size-14 shrink-0 object-contain"
+          />
+          <div>
+            <p className="text-mono-caps-eyebrow text-muted-foreground">BOBW</p>
+            <h1 className="text-display-md text-foreground">
+              Shopify OAuth Token Generator
+            </h1>
+          </div>
+        </div>
+
+        <div className="animate-in-fade rounded-md border border-border bg-card p-6 md:p-8">
           {/* Progress Steps */}
-          <div className="flex items-center justify-between mb-8">
-            {[1, 2, 3, 4].map((s) => (
-              <div key={s} className="flex items-center flex-1">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                    step >= s
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-200 text-gray-500"
-                  }`}
-                >
-                  {s}
+          <div className="mb-8 flex items-center justify-between">
+            {STEPS.map(({ n: s, label }) => (
+              <div key={s} className="flex flex-1 items-center last:flex-none">
+                <div className="flex flex-col items-center gap-2">
+                  <div
+                    className={`flex size-7 items-center justify-center rounded-md text-mono-caps-label transition-colors ${
+                      step >= s
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground opacity-60"
+                    }`}
+                  >
+                    {step > s ? <Check size={13} /> : s}
+                  </div>
+                  <span
+                    className={`text-mono-caps-label whitespace-nowrap ${
+                      step >= s
+                        ? "text-foreground"
+                        : "text-muted-foreground opacity-60"
+                    }`}
+                  >
+                    {label}
+                  </span>
                 </div>
                 {s < 4 && (
                   <div
-                    className={`flex-1 h-1 mx-2 ${
-                      step > s ? "bg-green-500" : "bg-gray-200"
+                    className={`mx-2 mb-5 h-px flex-1 transition-colors ${
+                      step > s ? "bg-foreground/50" : "bg-border"
                     }`}
                   />
                 )}
@@ -364,17 +405,20 @@ export default function ShopifyOAuthApp() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start">
-              <AlertCircle className="text-red-500 mr-3 mt-0.5" size={20} />
-              <p className="text-red-700">{error}</p>
+            <div className="mb-6 flex items-start gap-3 rounded-md border border-destructive/30 p-4">
+              <AlertCircle
+                className="mt-0.5 shrink-0 text-destructive"
+                size={18}
+              />
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 
           {/* Step 1: Configuration */}
           {step === 1 && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Étape 1 : Configuration initiale
+            <div className="animate-in-fade space-y-5">
+              <h2 className="text-mono-caps-eyebrow text-muted-foreground">
+                Étape 1 — Configuration initiale
               </h2>
 
               <Field>
@@ -428,7 +472,7 @@ export default function ShopifyOAuthApp() {
                   placeholder="Nom de l'artiste"
                 />
               </Field>
-              <div className="flex flex-row space-x-4">
+              <div className="flex flex-row gap-4">
                 <Field>
                   <FieldLabel htmlFor="record-company">
                     Maison de disques (optionnel)
@@ -465,12 +509,8 @@ export default function ShopifyOAuthApp() {
               </div>
               <button
                 onClick={() => setStep(2)}
-                disabled={
-                  !config.clientId ||
-                  !config.shop ||
-                  !config.artist
-                }
-                className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                disabled={!config.clientId || !config.shop || !config.artist}
+                className="text-mono-caps-button w-full rounded-md bg-primary py-3 text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 Continuer
               </button>
@@ -479,23 +519,23 @@ export default function ShopifyOAuthApp() {
 
           {/* Step 2: Generate OAuth URL */}
           {step === 2 && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Étape 2 : Autorisation OAuth
+            <div className="animate-in-fade space-y-6">
+              <h2 className="text-mono-caps-eyebrow text-muted-foreground">
+                Étape 2 — Autorisation OAuth
               </h2>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800 mb-4">
+              <div className="rounded-md border border-border p-4">
+                <p className="mb-4 text-sm text-muted-foreground">
                   Cliquez sur le bouton ci-dessous pour vous connecter à Shopify
                   et autoriser l'application. Vous serez redirigé vers cette
                   page avec un code d'autorisation.
                 </p>
 
-                <div className="bg-white rounded p-3 mb-4">
-                  <p className="text-xs text-gray-600 mb-1">
-                    URL d'autorisation :
+                <div className="mb-4 rounded-md border border-border bg-secondary/40 p-3">
+                  <p className="text-mono-caps-label mb-1 text-muted-foreground">
+                    URL d'autorisation
                   </p>
-                  <p className="text-sm font-mono break-all text-gray-800">
+                  <p className="text-mono-caption break-all text-foreground">
                     {generateOAuthUrl()}
                   </p>
                 </div>
@@ -506,12 +546,12 @@ export default function ShopifyOAuthApp() {
                       const url = generateOAuthUrl();
                       copyToClipboard(url, "oauth");
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                    className="text-mono-caps-button flex items-center gap-2 rounded-md bg-secondary px-4 py-2.5 text-secondary-foreground transition hover:opacity-90"
                   >
                     {copied === "oauth" ? (
-                      <Check size={18} />
+                      <Check size={15} />
                     ) : (
-                      <Copy size={18} />
+                      <Copy size={15} />
                     )}
                     Copier l'URL
                   </button>
@@ -525,7 +565,7 @@ export default function ShopifyOAuthApp() {
                         JSON.stringify(config),
                       );
                     }}
-                    className="flex-1 bg-green-500 text-white py-2 rounded-lg font-semibold text-center hover:bg-green-600 transition"
+                    className="text-mono-caps-button flex flex-1 items-center justify-center rounded-md bg-primary py-2.5 text-center text-primary-foreground transition hover:opacity-90"
                   >
                     Autoriser sur Shopify
                   </a>
@@ -534,8 +574,9 @@ export default function ShopifyOAuthApp() {
 
               <button
                 onClick={() => setStep(1)}
-                className="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+                className="text-mono-caps-button flex w-full items-center justify-center gap-2 rounded-md bg-secondary py-3 text-secondary-foreground transition hover:opacity-90"
               >
+                <ArrowLeft size={15} />
                 Retour
               </button>
             </div>
@@ -543,48 +584,50 @@ export default function ShopifyOAuthApp() {
 
           {/* Step 3: Exchange Code */}
           {step === 3 && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Étape 3 : Échange du code
+            <div className="animate-in-fade space-y-6">
+              <h2 className="text-mono-caps-eyebrow text-muted-foreground">
+                Étape 3 — Échange du code
               </h2>
 
               {authCode ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-sm text-green-800 mb-2">
-                    ✓ Code reçu automatiquement
+                <div className="rounded-md border border-border p-4">
+                  <p className="mb-2 flex items-center gap-1.5 text-sm text-foreground">
+                    <Check size={15} className="text-emerald-400" /> Code reçu
+                    automatiquement
                   </p>
-                  <p className="text-xs font-mono text-gray-700 break-all">
+                  <p className="text-mono-caption break-all text-muted-foreground">
                     {authCode}
                   </p>
                 </div>
               ) : (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Field>
+                  <FieldLabel htmlFor="auth-code">
                     Code d'autorisation (reçu après autorisation)
-                  </label>
-                  <input
+                  </FieldLabel>
+                  <Input
+                    id="auth-code"
                     type="text"
                     value={authCode}
                     onChange={(e) => setAuthCode(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Collez le code reçu"
                   />
-                </div>
+                </Field>
               )}
 
               <button
                 onClick={exchangeCodeForToken}
                 disabled={loading || !authCode}
-                className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                className="text-mono-caps-button flex w-full items-center justify-center gap-2 rounded-md bg-primary py-3 text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                {loading && <Loader2 className="animate-spin" size={20} />}
+                {loading && <Loader2 className="animate-spin" size={16} />}
                 {loading ? "Échange en cours..." : "Obtenir le token"}
               </button>
 
               <button
                 onClick={() => setStep(2)}
-                className="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+                className="text-mono-caps-button flex w-full items-center justify-center gap-2 rounded-md bg-secondary py-3 text-secondary-foreground transition hover:opacity-90"
               >
+                <ArrowLeft size={15} />
                 Retour
               </button>
             </div>
@@ -592,37 +635,42 @@ export default function ShopifyOAuthApp() {
 
           {/* Step 4: Success */}
           {step === 4 && accessToken && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-800">
-                ✓ Token généré avec succès !
+            <div className="animate-in-fade space-y-6">
+              <h2 className="flex items-center gap-1.5 text-mono-caps-eyebrow text-emerald-400">
+                <ShieldCheck size={14} />
+                Token généré avec succès
               </h2>
 
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                <p className="text-sm font-medium text-gray-700 mb-3">
+              <div className="rounded-md border border-border p-5">
+                <p className="mb-3 text-sm font-medium text-foreground">
                   Votre Access Token :
                 </p>
-                <div className="bg-white rounded-lg p-4 mb-4">
-                  <p className="font-mono text-sm break-all text-gray-800">
+                <div className="mb-4 rounded-md border border-border bg-secondary/40 p-4">
+                  <p className="text-mono-caption break-all text-foreground">
                     {accessToken}
                   </p>
                 </div>
 
                 <button
                   onClick={() => copyToClipboard(accessToken, "token")}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                  className="text-mono-caps-button flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-primary-foreground transition hover:opacity-90"
                 >
                   {copied === "token" ? (
-                    <Check size={18} />
+                    <Check size={15} />
                   ) : (
-                    <Copy size={18} />
+                    <Copy size={15} />
                   )}
                   {copied === "token" ? "Copié !" : "Copier le token"}
                 </button>
               </div>
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-sm text-yellow-800">
-                  ⚠️ Conservez ce token en sécurité. Ne le partagez jamais
+              <div className="flex items-start gap-3 rounded-md border border-amber-500/30 p-4">
+                <AlertCircle
+                  className="mt-0.5 shrink-0 text-amber-400"
+                  size={16}
+                />
+                <p className="text-sm text-amber-400">
+                  Conservez ce token en sécurité. Ne le partagez jamais
                   publiquement.
                 </p>
               </div>
@@ -644,7 +692,7 @@ export default function ShopifyOAuthApp() {
                   // Nettoyer le localStorage
                   localStorage.removeItem("shopify_oauth_config");
                 }}
-                className="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+                className="text-mono-caps-button w-full rounded-md bg-secondary py-3 text-secondary-foreground transition hover:opacity-90"
               >
                 Générer un nouveau token
               </button>
@@ -653,33 +701,45 @@ export default function ShopifyOAuthApp() {
         </div>
 
         {/* Instructions */}
-        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            📋 Instructions
+        <div className="mt-6 rounded-md border border-border p-6">
+          <h3 className="text-mono-caps-eyebrow mb-4 text-muted-foreground">
+            Instructions
           </h3>
-          <div className="space-y-3 text-sm text-gray-600">
+          <div className="space-y-3 text-sm text-muted-foreground">
             <p>
-              <strong>1.</strong> Créez une app dans votre Shopify Partners
-              Dashboard
+              <span className="text-mono-caps-label text-foreground">01</span>{" "}
+              Créez une app dans votre Shopify Partners Dashboard
             </p>
             <p>
-              <strong>2.</strong> Configurez l'App URL et Redirect URL avec :{" "}
-              <code className="bg-gray-100 px-2 py-1 rounded">
-                https://bobw-auth.vercel.app
+              <span className="text-mono-caps-label text-foreground">02</span>{" "}
+              Configurez l'App URL et Redirect URL avec :{" "}
+              <code className="text-mono-caption rounded-md bg-secondary px-1.5 py-0.5 text-foreground">
+                https://auth.bobw.app
               </code>
             </p>
             <p>
-              <strong>3.</strong> Entrez vos identifiants (Client ID et Client
-              Secret)
+              <span className="text-mono-caps-label text-foreground">03</span>{" "}
+              Entrez vos identifiants (Client ID et Client Secret)
             </p>
             <p>
-              <strong>4.</strong> Cliquez sur "Autoriser sur Shopify"
+              <span className="text-mono-caps-label text-foreground">04</span>{" "}
+              Cliquez sur "Autoriser sur Shopify"
             </p>
             <p>
-              <strong>5.</strong> Récupérez votre access token (shpat_...)
+              <span className="text-mono-caps-label text-foreground">05</span>{" "}
+              Récupérez votre access token (shpat_...)
             </p>
           </div>
         </div>
+
+        {/* Signature sign-off — faint wordmark stencil, per DESIGN.md's
+            footer-wordmark-banner. */}
+        <p
+          aria-hidden="true"
+          className="mt-10 select-none text-center text-5xl font-medium tracking-[-0.03em] text-secondary md:text-6xl"
+        >
+          bobw
+        </p>
       </div>
     </div>
   );

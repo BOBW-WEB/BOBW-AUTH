@@ -6,8 +6,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-display-sans);
+  --font-mono: var(--font-mono-caps);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -37,82 +37,99 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
+  --radius-2xl: calc(var(--radius) + 12px);
+  --radius-3xl: calc(var(--radius) + 16px);
+  --radius-4xl: calc(var(--radius) + 20px);
 }
 
+/* ─── Together AI-inspired tokens (see DESIGN.md) ─── */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --radius: 4px; /* {rounded.sm} — the brand's canonical radius */
+
+  --db-ink: #000000;
+  --db-canvas: #ffffff;
+  --db-canvas-dark: #010120;
+  --db-surface-dark-soft: #313641;
+  --db-hairline-on-dark: rgba(255, 255, 255, 0.12);
+  --db-on-dark: #ffffff;
+  --db-body: #959494;
+  --db-orange: #fc4c02;
+  --db-magenta: #ef2cc1;
+  --db-periwinkle: #bdbbff;
+  --db-mint: #c8f6f9;
+
+  --background: var(--db-canvas);
+  --foreground: var(--db-ink);
+  --card: var(--db-canvas);
+  --card-foreground: var(--db-ink);
+  --popover: var(--db-canvas);
+  --popover-foreground: var(--db-ink);
+  --primary: var(--db-ink);
+  --primary-foreground: var(--db-canvas);
+  --secondary: #ebebeb;
+  --secondary-foreground: var(--db-ink);
+  --muted: #ebebeb;
+  --muted-foreground: var(--db-body);
+  --accent: var(--db-mint);
+  --accent-foreground: var(--db-ink);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.08);
+  --ring: var(--db-periwinkle);
+  --chart-1: var(--db-orange);
+  --chart-2: var(--db-magenta);
+  --chart-3: var(--db-periwinkle);
+  --chart-4: var(--db-mint);
+  --chart-5: var(--db-body);
+  --sidebar: var(--db-canvas);
+  --sidebar-foreground: var(--db-ink);
+  --sidebar-primary: var(--db-ink);
+  --sidebar-primary-foreground: var(--db-canvas);
+  --sidebar-accent: #ebebeb;
+  --sidebar-accent-foreground: var(--db-ink);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --sidebar-ring: var(--db-periwinkle);
 }
 
+/* Polarity flip — canvas-dark band. Text on-dark, hairline-on-dark borders. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: var(--db-canvas-dark);
+  --foreground: var(--db-on-dark);
+  --card: var(--db-canvas-dark);
+  --card-foreground: var(--db-on-dark);
+  --popover: var(--db-canvas-dark);
+  --popover-foreground: var(--db-on-dark);
+  /* On a dark band the "primary" pill is the white pill (button-secondary-white),
+     since the brand's black pill only reads on canvas surfaces. */
+  --primary: var(--db-canvas);
+  --primary-foreground: var(--db-ink);
+  --secondary: var(--db-surface-dark-soft);
+  --secondary-foreground: var(--db-on-dark);
+  --muted: var(--db-surface-dark-soft);
+  --muted-foreground: var(--db-body);
+  --accent: var(--db-mint);
+  --accent-foreground: var(--db-ink);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: var(--db-hairline-on-dark);
+  --input: var(--db-hairline-on-dark);
+  --ring: var(--db-periwinkle);
+  --chart-1: var(--db-orange);
+  --chart-2: var(--db-magenta);
+  --chart-3: var(--db-periwinkle);
+  --chart-4: var(--db-mint);
+  --chart-5: var(--db-body);
+  --sidebar: var(--db-canvas-dark);
+  --sidebar-foreground: var(--db-on-dark);
+  --sidebar-primary: var(--db-canvas);
+  --sidebar-primary-foreground: var(--db-ink);
+  --sidebar-accent: var(--db-surface-dark-soft);
+  --sidebar-accent-foreground: var(--db-on-dark);
+  --sidebar-border: var(--db-hairline-on-dark);
+  --sidebar-ring: var(--db-periwinkle);
 }
 
 @layer base {
@@ -121,5 +138,80 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "ss01" 1;
+    letter-spacing: -0.16px;
+  }
+}
+
+/* ─── Typography utilities (DESIGN.md § Typography) ─── */
+@layer utilities {
+  .text-display-lg {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 32.2px;
+    letter-spacing: -0.42px;
+  }
+  .text-display-md {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 25.3px;
+    letter-spacing: -0.22px;
+  }
+  .text-mono-caps-button {
+    font-family: var(--font-mono-caps), ui-monospace, SF Mono, Menlo, monospace;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+    letter-spacing: 0.08px;
+  }
+  .text-mono-caps-eyebrow {
+    font-family: var(--font-mono-caps), ui-monospace, SF Mono, Menlo, monospace;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 11px;
+    letter-spacing: 0.55px;
+  }
+  .text-mono-caps-label {
+    font-family: var(--font-mono-caps), ui-monospace, SF Mono, Menlo, monospace;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 15.4px;
+    letter-spacing: 0.055px;
+  }
+  .text-mono-caption {
+    font-family: var(--font-mono-caps), ui-monospace, SF Mono, Menlo, monospace;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 0.05px;
+  }
+
+  .animate-in-fade {
+    animation: fade-in 0.35s ease-out;
+  }
+
+  /* The brand's single piece of decorative chrome — the three-stop gradient
+     ribbon. Used once, at large scale, never miniaturised. */
+  .brand-ribbon {
+    background: linear-gradient(
+      100deg,
+      var(--db-orange) 0%,
+      var(--db-magenta) 48%,
+      var(--db-periwinkle) 100%
+    );
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
